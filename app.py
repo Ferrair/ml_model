@@ -19,11 +19,11 @@ def manual_reset_api():
     if environment == Environment.TEST:
         res = reset_test([str(T1), str(T2)])
         logging.info(res)
-        return res
+        return jsonify(res)
     elif environment == Environment.PROD:
         res = reset_prod([str(T1), str(T2)])
         logging.info(res)
-        return res
+        return jsonify(res)
     else:
         return jsonify("environment params error")
 
