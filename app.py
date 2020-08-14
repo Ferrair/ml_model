@@ -7,6 +7,12 @@ from model.hs import reset_test, reset_prod
 app = Flask(__name__)
 
 
+@app.route('/api/healthz')
+def healthz_api():
+    # 探针
+    return jsonify('OK')
+
+
 @app.route('/api/hs/reset', methods=["POST"])
 def manual_reset_api():
     data = request.get_json()
