@@ -4,9 +4,15 @@ from PythonDeviceControlLib.DeviceCommands import DeviceCommandTypes
 from model import handler
 
 
+def decode(res):
+    try:
+        return json.loads(res.decode())
+    except Exception as e:
+        raise Exception('plc api return error. {}'.format(e))
+
+
 def _is_failure(res):
     try:
-        res = json.loads(res.decode())
         fail = False
         for r in res:
             fail = fail or not r['IsSetSuccessful']
@@ -27,13 +33,15 @@ def _get_value(res, address):
 def reset_prod(values: list):
     for _ in range(5):
         res = handler.RunPLCCommand(DeviceCommandTypes.ML_5K_HS_TB_WD_READ_HMI, [])
-        if not _is_failure(res) and int(_get_value(json.loads(res.decode()), "5H.5H.LD5_KL2226_PID042MCVHMI")) == 0:
+        res = decode(res)
+        if not _is_failure(res) and int(_get_value(res, "5H.5H.LD5_KL2226_PID042MCVHMI")) == 0:
             res = handler.RunPLCCommand(DeviceCommandTypes.ML_5K_HS_TB_WD_RESET_ALL, values)
-            return None if _is_failure(res) else json.loads(res.decode())
+            res = decode(res)
+            return res
         handler.RunPLCCommand(DeviceCommandTypes.ML_5K_HS_TB_WD_SWITCH_AUTO, [])
     return None
 
 
 def reset_test(values: list):
     res = handler.RunPLCCommand(DeviceCommandTypes.ML_5H_5H_LD5_TEST_RESET_ALL, values)
-    return None if _is_failure(res) else json.loads(res.decode())
+    return decode(res)
