@@ -8,7 +8,7 @@ def decode(res):
     try:
         return json.loads(res.decode())
     except Exception as e:
-        raise Exception('plc api return error. {}'.format(e))
+        raise Exception('plc api return error. {}'.format(res))
 
 
 def _is_failure(res):
